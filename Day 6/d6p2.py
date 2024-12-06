@@ -33,7 +33,23 @@ def check(grid, x, y):
             return False
         if (tortoiseX == hareX and tortoiseY == hareY and tortoiseIdx == hareIdx):
             return True
-
+        
+def getVisited(grid, x, y):
+    visited = set()
+    idx = 0
+    while (True):
+        newX = x + directions[idx][0]
+        newY = y + directions[idx][1]
+        if (newX < 0 or newX >= breadth or newY < 0 or newY >= length):
+            break
+        if (grid[newY][newX] == "#"):
+            idx = (idx + 1) % 4
+        else:
+            visited.add((newX, newY))
+            x = newX
+            y = newY
+            
+    return visited
 # Open the file in read mode
 with open('input.txt', 'r') as file:
     # Loop through each line in the file
@@ -52,17 +68,16 @@ with open('input.txt', 'r') as file:
         if ("^" in grid[i]):
             startingY = i
             startingX = grid[i].index("^")
-    
+    visited = getVisited(grid, startingX, startingY)
     # brute force setting of #
-    for changedX in range(breadth):
-        for changedY in range(length):
-            currentSymbol = grid[changedY][changedX]
-            if (currentSymbol == "#" or currentSymbol == "^"):
-                continue
-            grid[changedY][changedX] = "#"
-            print (changedX, changedY)
-            if (check(grid, startingX, startingY)):
-                ans += 1
-            grid[changedY][changedX] = currentSymbol
+    for changedX, changedY in visited:
+        currentSymbol = grid[changedY][changedX]
+        if (currentSymbol == "#" or currentSymbol == "^"):
+            continue
+        grid[changedY][changedX] = "#"
+        print (changedX, changedY)
+        if (check(grid, startingX, startingY)):
+            ans += 1
+        grid[changedY][changedX] = currentSymbol
     
     print (ans)
